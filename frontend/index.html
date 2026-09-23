@@ -24,7 +24,7 @@
 <body class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-800">
 
     <!-- Splash Screen -->
-    <div id="splash-screen" class="fixed inset-0 bg-blue-900 z-50 flex flex-col items-center justify-center transition-opacity duration-1000">
+    <div id="splash-screen" class="fixed inset-0 bg-blue-900 z-50 flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="animate-bounce mb-8">
             <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
         </div>
@@ -315,8 +315,8 @@
                 splash.classList.add('opacity-0');
                 setTimeout(() => {
                     splash.classList.add('hidden');
-                }, 1000);
-            }, 2500); // Show splash for 2.5 seconds
+                }, 500); // Wait for CSS transition (500ms)
+            }, 800); // Show splash for 0.8 seconds
         });
 
         // --- Navigation ---
