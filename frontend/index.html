@@ -23,6 +23,26 @@
 </head>
 <body class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-800">
 
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 bg-blue-900 z-50 flex flex-col items-center justify-center transition-opacity duration-1000">
+        <div class="animate-bounce mb-8">
+            <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h1 class="text-4xl font-extrabold text-white tracking-tight mb-4 animate-pulse">Agentic AI Support</h1>
+        <p class="text-blue-200 text-lg">Initializing Neural Pathways & Multi-Agent Network...</p>
+        
+        <div class="w-64 h-2 bg-blue-800 rounded-full mt-8 overflow-hidden">
+            <div class="h-full bg-blue-400 w-1/2 animate-[spin_2s_linear_infinite]" style="animation: loading-bar 2s ease-in-out infinite;"></div>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes loading-bar {
+            0% { transform: translateX(-100%); width: 100%; }
+            100% { transform: translateX(200%); width: 10%; }
+        }
+    </style>
+
     <!-- Sidebar -->
     <div class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
@@ -288,6 +308,17 @@
     </div>
 
     <script>
+        // --- Splash Screen ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.classList.add('opacity-0');
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                }, 1000);
+            }, 2500); // Show splash for 2.5 seconds
+        });
+
         // --- Navigation ---
         function switchTab(tab) {
             document.getElementById('view-overview').classList.toggle('hidden', tab !== 'overview');
