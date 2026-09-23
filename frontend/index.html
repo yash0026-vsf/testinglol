@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Support Agent AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: "class" }</script>
     <style>
         .message-bubble {
             max-width: 80%;
@@ -21,7 +22,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-800">
+<body class="bg-gray-50 dark:bg-gray-900 h-screen flex overflow-hidden font-sans text-gray-800 dark:text-gray-100">
 
     <!-- Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 bg-blue-900 z-50 flex flex-col items-center justify-center transition-opacity duration-500">
@@ -44,9 +45,9 @@
     </style>
 
     <!-- Sidebar -->
-    <div class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
+    <div class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
-            <div class="p-6 border-b border-gray-100">
+            <div class="p-6 border-b border-gray-100 dark:border-gray-700">
                 <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Support AI
@@ -58,21 +59,28 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Agent Overview
                 </button>
-                <button onclick="switchTab('chat')" id="tab-chat" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                <button onclick="switchTab('chat')" id="tab-chat" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     Live Chat
                 </button>
-                <button onclick="switchTab('analytics')" id="tab-analytics" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                <button onclick="switchTab('analytics')" id="tab-analytics" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Analytics Engine
                 </button>
             </nav>
         </div>
         
-        <div class="p-4 border-t border-gray-200 bg-gray-50">
-            <p class="text-xs text-gray-500 mb-2 uppercase font-semibold tracking-wider">Current Session</p>
-            <div class="bg-gray-200 text-gray-700 px-3 py-2 rounded text-sm font-mono truncate mb-3" id="threadIdDisplay"></div>
-            <button onclick="startNewConversation()" class="w-full py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium shadow-sm">
+        
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <button onclick="toggleDarkMode()" class="w-full mb-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm font-medium shadow-sm flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <svg class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                Toggle Theme
+            </button>
+
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 uppercase font-semibold tracking-wider">Current Session</p>
+            <div class="bg-gray-200 text-gray-700 dark:text-gray-200 px-3 py-2 rounded text-sm font-mono truncate mb-3" id="threadIdDisplay"></div>
+            <button onclick="startNewConversation()" class="w-full py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-50 dark:bg-gray-900 transition-colors text-sm font-medium shadow-sm">
                 Restart Session
             </button>
         </div>
@@ -82,11 +90,11 @@
     <div class="flex-1 flex flex-col relative w-full overflow-hidden">
         
         <!-- Overview View -->
-        <div id="view-overview" class="flex-1 flex flex-col h-full w-full bg-gray-50 overflow-y-auto">
+        <div id="view-overview" class="flex-1 flex flex-col h-full w-full bg-gray-50 dark:bg-gray-900 overflow-y-auto">
             <div class="p-8 max-w-4xl mx-auto w-full mt-6">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Autonomous Agent Capabilities</h2>
-                    <p class="text-lg text-gray-500 mb-8">This portal demonstrates a complete Multi-Agent Customer Support system powered by LangGraph.</p>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Autonomous Agent Capabilities</h2>
+                    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8">This portal demonstrates a complete Multi-Agent Customer Support system powered by LangGraph.</p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
@@ -172,7 +180,7 @@
 
                     </div>
                     
-                    <div class="mt-8 border-t border-gray-200 pt-8 text-center">
+                    <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8 text-center">
                         <button onclick="switchTab('chat')" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm inline-flex items-center gap-2">
                             Try the Live Chat
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -185,10 +193,10 @@
 
         <!-- Chat View -->
         <div id="view-chat" class="hidden flex-1 flex flex-col h-full w-full max-w-4xl mx-auto">
-            <div class="p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex justify-between items-center shrink-0">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm z-10 flex justify-between items-center shrink-0">
                 <div>
-                    <h2 class="text-lg font-semibold text-gray-800">Customer Support Portal</h2>
-                    <p class="text-sm text-gray-500">Powered by LangGraph Agentic AI</p>
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Customer Support Portal</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Powered by LangGraph Agentic AI</p>
                 </div>
                 <span class="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
                     <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -197,22 +205,22 @@
             </div>
 
             <!-- Chat Messages -->
-            <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50" id="chatContainer">
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50 dark:bg-gray-900" id="chatContainer">
                 <div class="flex items-start gap-4">
                     <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">AI</div>
-                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble text-gray-700">
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble text-gray-700 dark:text-gray-200">
                         Hello! I am the Autonomous Support Agent. I can help with billing, technical issues, account access, or handle formal complaints. How can I assist you today?
                     </div>
                 </div>
             </div>
 
             <!-- Chat Input Area -->
-            <div class="p-6 bg-white border-t border-gray-200 shrink-0" id="inputContainer">
+            <div class="p-6 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shrink-0" id="inputContainer">
                 <form class="flex gap-3" onsubmit="sendMessage(event)">
-                    <button type="button" id="micBtn" onclick="toggleRecording()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-colors flex items-center justify-center shadow-sm">
+                    <button type="button" id="micBtn" onclick="toggleRecording()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 dark:text-gray-200 px-4 py-3 rounded-lg transition-colors flex items-center justify-center shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
                     </button>
-                    <input type="text" id="messageInput" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-gray-700" placeholder="Type or speak your issue here..." required autocomplete="off">
+                    <input type="text" id="messageInput" class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-gray-700 dark:text-gray-200" placeholder="Type or speak your issue here..." required autocomplete="off">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
                         <span>Send</span>
                         <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
@@ -230,7 +238,7 @@
                         <h3 class="text-lg font-bold text-yellow-800">Human Support Escalation</h3>
                         <p class="text-sm text-yellow-700 mt-1">The AI has requested human intervention. Review the context and reply as staff.</p>
                         
-                        <div class="mt-4 bg-white border border-yellow-200 rounded-lg p-4 text-sm text-gray-700" id="escalationDetails">
+                        <div class="mt-4 bg-white dark:bg-gray-800 border border-yellow-200 rounded-lg p-4 text-sm text-gray-700 dark:text-gray-200" id="escalationDetails">
                             <!-- Details injected here -->
                         </div>
                     </div>
@@ -246,12 +254,12 @@
         </div>
 
         <!-- Analytics View -->
-        <div id="view-analytics" class="hidden flex-1 flex flex-col h-full w-full bg-gray-50 overflow-y-auto">
+        <div id="view-analytics" class="hidden flex-1 flex flex-col h-full w-full bg-gray-50 dark:bg-gray-900 overflow-y-auto">
             <div class="p-8 max-w-5xl mx-auto w-full">
                 <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Customer Experience Engine</h2>
-                        <p class="text-gray-500 mt-1">AI-driven analysis of recent support threads and sentiment.</p>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Customer Experience Engine</h2>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">AI-driven analysis of recent support threads and sentiment.</p>
                     </div>
                     <button onclick="fetchAnalytics()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -261,16 +269,16 @@
 
                 <!-- Loading State -->
                 <div id="analytics-loader" class="hidden flex flex-col items-center justify-center py-20">
-                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-                    <p class="text-gray-500 font-medium">AI is reading database threads and generating report...</p>
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 dark:border-gray-700 h-12 w-12 mb-4"></div>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium">AI is reading database threads and generating report...</p>
                 </div>
 
                 <!-- Results Grid -->
                 <div id="analytics-results" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
                     
                     <!-- Recurring Issues -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 md:col-span-2">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 md:col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                             Top Recurring Issues
                         </h3>
@@ -278,8 +286,8 @@
                     </div>
 
                     <!-- Emerging Complaints -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                             Emerging Complaints
                         </h3>
@@ -287,8 +295,8 @@
                     </div>
 
                     <!-- Churn Signals -->
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
                             <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
                             Churn Signals
                         </h3>
@@ -299,7 +307,7 @@
                 <!-- Initial State -->
                 <div id="analytics-initial" class="text-center py-20">
                     <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <p class="text-gray-500">Run the analysis engine to scan the database and generate a report.</p>
+                    <p class="text-gray-500 dark:text-gray-400">Run the analysis engine to scan the database and generate a report.</p>
                 </div>
 
             </div>
@@ -319,14 +327,27 @@
             }, 800); // Show splash for 0.8 seconds
         });
 
+        
+        // --- Theme Logic ---
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
         // --- Navigation ---
+
         function switchTab(tab) {
             document.getElementById('view-overview').classList.toggle('hidden', tab !== 'overview');
             document.getElementById('view-chat').classList.toggle('hidden', tab !== 'chat');
             document.getElementById('view-analytics').classList.toggle('hidden', tab !== 'analytics');
             
             const activeClass = 'w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors';
-            const inactiveClass = 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors';
+            const inactiveClass = 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-lg font-medium transition-colors';
             
             document.getElementById('tab-overview').className = tab === 'overview' ? activeClass : inactiveClass;
             document.getElementById('tab-chat').className = tab === 'chat' ? activeClass : inactiveClass;
@@ -346,7 +367,7 @@
             chat.innerHTML = `
                 <div class="flex items-start gap-4">
                     <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">AI</div>
-                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble text-gray-700">
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble text-gray-700 dark:text-gray-200">
                         New session started. How can I assist you today?
                     </div>
                 </div>
@@ -365,7 +386,7 @@
             
             const bubbleStyle = role === 'user'
                 ? 'bg-blue-600 text-white p-4 rounded-2xl rounded-tr-none shadow-sm message-bubble'
-                : 'bg-white border border-gray-200 text-gray-700 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble';
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble';
                 
             msg.innerHTML = `
                 ${avatar}
@@ -515,8 +536,8 @@
                 const fillList = (id, items) => {
                     const ul = document.getElementById(id);
                     ul.innerHTML = '';
-                    if(!items || items.length === 0) ul.innerHTML = '<li class="text-gray-500 italic text-sm">No data found.</li>';
-                    else items.forEach(i => ul.innerHTML += `<li class="flex items-start gap-2 text-sm text-gray-700"><span class="text-blue-500 mt-1">•</span> ${i}</li>`);
+                    if(!items || items.length === 0) ul.innerHTML = '<li class="text-gray-500 dark:text-gray-400 italic text-sm">No data found.</li>';
+                    else items.forEach(i => ul.innerHTML += `<li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200"><span class="text-blue-500 mt-1">•</span> ${i}</li>`);
                 };
                 
                 fillList('analytics-issues', data.recurring_issues);
