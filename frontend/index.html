@@ -24,7 +24,7 @@
 <body class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-800">
 
     <!-- Sidebar -->
-    <div class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10">
+    <div class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10 shrink-0">
         <div>
             <div class="p-6 border-b border-gray-100">
                 <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
@@ -34,7 +34,11 @@
             </div>
             
             <nav class="p-4 space-y-2">
-                <button onclick="switchTab('chat')" id="tab-chat" class="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors">
+                <button onclick="switchTab('overview')" id="tab-overview" class="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Agent Overview
+                </button>
+                <button onclick="switchTab('chat')" id="tab-chat" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
                     Live Chat
                 </button>
@@ -55,11 +59,73 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col relative">
+    <div class="flex-1 flex flex-col relative w-full overflow-hidden">
         
+        <!-- Overview View -->
+        <div id="view-overview" class="flex-1 flex flex-col h-full w-full bg-gray-50 overflow-y-auto">
+            <div class="p-8 max-w-4xl mx-auto w-full mt-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Autonomous Agent Capabilities</h2>
+                    <p class="text-lg text-gray-500 mb-8">This portal demonstrates a complete Multi-Agent Customer Support system powered by LangGraph.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div class="bg-blue-50 border border-blue-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-blue-800 text-lg mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                Intelligent Ticket Router
+                            </h3>
+                            <p class="text-blue-900 text-sm">
+                                The system analyzes every incoming message for intent (billing, technical, etc.), sentiment, and urgency, dynamically routing to specialized AI sub-agents.
+                            </p>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-green-800 text-lg mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                Knowledge Reasoning
+                            </h3>
+                            <p class="text-green-900 text-sm">
+                                A built-in Retrieval-Augmented Generation (RAG) engine fetches official company policies (refunds, SLAs) to provide highly accurate, hallucination-free answers.
+                            </p>
+                        </div>
+
+                        <div class="bg-yellow-50 border border-yellow-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-yellow-800 text-lg mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Complaint Investigation
+                            </h3>
+                            <p class="text-yellow-900 text-sm">
+                                If a user is highly upset, the AI switches to a Root Cause Analysis (RCA) mode. It asks clarifying diagnostic questions rather than just categorizing the complaint.
+                            </p>
+                        </div>
+
+                        <div class="bg-purple-50 border border-purple-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-purple-800 text-lg mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                Analytics Engine
+                            </h3>
+                            <p class="text-purple-900 text-sm">
+                                An asynchronous endpoint scans through historical conversation threads in the database to identify recurring issues, negative sentiment trends, and early churn signals.
+                            </p>
+                        </div>
+
+                    </div>
+                    
+                    <div class="mt-8 border-t border-gray-200 pt-8 text-center">
+                        <button onclick="switchTab('chat')" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm inline-flex items-center gap-2">
+                            Try the Live Chat
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
         <!-- Chat View -->
-        <div id="view-chat" class="flex-1 flex flex-col h-full w-full max-w-4xl mx-auto">
-            <div class="p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex justify-between items-center">
+        <div id="view-chat" class="hidden flex-1 flex flex-col h-full w-full max-w-4xl mx-auto">
+            <div class="p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex justify-between items-center shrink-0">
                 <div>
                     <h2 class="text-lg font-semibold text-gray-800">Customer Support Portal</h2>
                     <p class="text-sm text-gray-500">Powered by LangGraph Agentic AI</p>
@@ -81,7 +147,7 @@
             </div>
 
             <!-- Chat Input Area -->
-            <div class="p-6 bg-white border-t border-gray-200" id="inputContainer">
+            <div class="p-6 bg-white border-t border-gray-200 shrink-0" id="inputContainer">
                 <form class="flex gap-3" onsubmit="sendMessage(event)">
                     <input type="text" id="messageInput" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-gray-700" placeholder="Type your issue here..." required autocomplete="off">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
@@ -92,7 +158,7 @@
             </div>
 
             <!-- Human Review / Escalation Area -->
-            <div class="p-6 bg-yellow-50 border-t-4 border-yellow-400 hidden" id="humanReviewContainer">
+            <div class="p-6 bg-yellow-50 border-t-4 border-yellow-400 hidden shrink-0" id="humanReviewContainer">
                 <div class="flex items-start gap-4 mb-4">
                     <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -181,16 +247,16 @@
     <script>
         // --- Navigation ---
         function switchTab(tab) {
+            document.getElementById('view-overview').classList.toggle('hidden', tab !== 'overview');
             document.getElementById('view-chat').classList.toggle('hidden', tab !== 'chat');
             document.getElementById('view-analytics').classList.toggle('hidden', tab !== 'analytics');
             
-            document.getElementById('tab-chat').className = tab === 'chat' 
-                ? 'w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors'
-                : 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors';
-                
-            document.getElementById('tab-analytics').className = tab === 'analytics' 
-                ? 'w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors'
-                : 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors';
+            const activeClass = 'w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors';
+            const inactiveClass = 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors';
+            
+            document.getElementById('tab-overview').className = tab === 'overview' ? activeClass : inactiveClass;
+            document.getElementById('tab-chat').className = tab === 'chat' ? activeClass : inactiveClass;
+            document.getElementById('tab-analytics').className = tab === 'analytics' ? activeClass : inactiveClass;
         }
 
         // --- Chat Logic ---
