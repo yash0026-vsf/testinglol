@@ -20,7 +20,7 @@ from config.checkpointer import (
 )
 from config.logging import configure_logging
 from graph.builder import build_graph
-
+from api.analytics import router as analytics_router
 
 configure_logging()
 
@@ -44,6 +44,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.include_router(analytics_router)
 
 
 def get_config(thread_id: str) -> dict:

@@ -24,6 +24,7 @@ from workflows.account.builder import build_account_graph
 from workflows.billing.builder import build_billing_graph
 from workflows.general.builder import build_general_graph
 from workflows.technical.builder import build_technical_graph
+from workflows.complaint.builder import build_complaint_graph
 
 
 INTENT_PATH_MAP = {
@@ -31,6 +32,7 @@ INTENT_PATH_MAP = {
     "technical": "technical_workflow",
     "account": "account_workflow",
     "general": "general_workflow",
+    "complaint": "complaint_workflow",
     "unknown": "fallback_support",
 }
 
@@ -46,6 +48,7 @@ def build_graph(checkpointer=None):
     technical_graph = build_technical_graph()
     account_graph = build_account_graph()
     general_graph = build_general_graph()
+    complaint_graph = build_complaint_graph()
 
     # --------------------------------------------------
     # Input processing
@@ -101,6 +104,11 @@ def build_graph(checkpointer=None):
     builder.add_node(
         "general_workflow",
         general_graph,
+    )
+
+    builder.add_node(
+        "complaint_workflow",
+        complaint_graph,
     )
 
     # --------------------------------------------------
@@ -165,6 +173,7 @@ def build_graph(checkpointer=None):
             "technical": "technical_workflow",
             "account": "account_workflow",
             "general": "general_workflow",
+            "complaint": "complaint_workflow",
             "unknown": "fallback_support",
             "llm": "llm_classify_intent",
         },
@@ -227,6 +236,16 @@ def build_graph(checkpointer=None):
     builder.add_edge(
         "general_workflow",
         "finalize_response",
+    )
+
+    # Complaint workflow may finalize or escalate.
+    builder.add_conditional_edges(
+        "complaint_workflow",
+        route_after_support_workflow,
+        {
+            "finalize": "finalize_response",
+            "escalate": "human_support_workflow",
+        },
     )
 
     # Unsupported requests complete through fallback.

@@ -10,34 +10,31 @@ CLASSIFICATION_PROMPT = ChatPromptTemplate.from_messages(
         (
             "system",
             """
-You are an intent classifier for a customer support system.
+You are an intent classifier and intelligent ticket router for a customer support system.
 
 Classify the latest customer message into exactly one category:
 
 billing:
-Payment issues, charges, refunds, invoices, subscription charges,
-or other billing-related problems.
+Payment issues, charges, refunds, invoices, subscription charges.
 
 technical:
-Application errors, crashes, bugs, broken functionality,
-or other technical problems.
+Application errors, crashes, bugs, broken functionality.
 
 account:
-Login problems, passwords, account access, profile access,
-or account management issues.
+Login problems, passwords, account access, profile access.
 
 general:
-Product features, pricing information, product information,
-or general questions about the service.
+Product features, pricing information, product information.
+
+complaint:
+Customer expressing strong dissatisfaction, anger, or filing a formal complaint requiring investigation.
 
 unknown:
 Requests that do not belong to any supported category.
 
-Use previous conversation context only when the latest customer
-message is ambiguous or refers to an earlier issue.
+Additionally, analyze the 'sentiment' (positive, neutral, negative) and the 'urgency' (low, medium, high, critical) of the request.
 
-Prioritize the latest customer message over older conversation history.
-
+Use previous conversation context only when the latest customer message is ambiguous.
 Return only the structured classification result.
 """,
         ),
@@ -95,6 +92,11 @@ def llm_classify_intent(state: SupportState) -> dict:
             "routing_source": "llm",
             "needs_llm_routing": False,
             "error_occurred": False,
+            "context": {
+                **state.get("context", {}),
+                "sentiment": result.sentiment,
+                "urgency": result.urgency
+            }
         }
 
     except Exception as exc:
