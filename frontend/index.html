@@ -149,7 +149,10 @@
             <!-- Chat Input Area -->
             <div class="p-6 bg-white border-t border-gray-200 shrink-0" id="inputContainer">
                 <form class="flex gap-3" onsubmit="sendMessage(event)">
-                    <input type="text" id="messageInput" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-gray-700" placeholder="Type your issue here..." required autocomplete="off">
+                    <button type="button" id="micBtn" onclick="toggleRecording()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-colors flex items-center justify-center shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                    </button>
+                    <input type="text" id="messageInput" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-gray-700" placeholder="Type or speak your issue here..." required autocomplete="off">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
                         <span>Send</span>
                         <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
@@ -320,6 +323,53 @@
             document.getElementById('humanResponseInput').value = '';
         }
 
+        // --- Voice Logic ---
+        let recognition;
+        let isRecording = false;
+        
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                document.getElementById('messageInput').value = text;
+                toggleRecording(); // Stop
+            };
+            recognition.onerror = function(event) {
+                console.error("Speech error", event);
+                toggleRecording();
+            }
+            recognition.onend = function() {
+                if (isRecording) toggleRecording();
+            }
+        }
+        
+        function toggleRecording() {
+            if (!recognition) return alert("Speech recognition not supported in this browser.");
+            const micBtn = document.getElementById('micBtn');
+            if (isRecording) {
+                recognition.stop();
+                micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
+                micBtn.classList.add('bg-gray-100', 'text-gray-700');
+            } else {
+                recognition.start();
+                micBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
+            }
+            isRecording = !isRecording;
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                // Remove emojis and simple markdown for speech
+                const cleanText = text.replace(/[*_#`~]/g, '').replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
         async function sendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('messageInput');
@@ -339,8 +389,10 @@
                 
                 if(data.status === 'completed') {
                     appendMessage('assistant', data.response);
+                    speakText(data.response);
                 } else if (data.status === 'human_review_required') {
                     showHumanReview(data.interrupt_data);
+                    speakText("I need to escalate this to a human manager.");
                 } else if (res.status === 409) {
                     alert("Awaiting human review. Please resolve it first.");
                 } else {

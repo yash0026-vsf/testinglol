@@ -32,7 +32,7 @@ Customer expressing strong dissatisfaction, anger, or filing a formal complaint 
 unknown:
 Requests that do not belong to any supported category.
 
-Additionally, analyze the 'sentiment' (positive, neutral, negative) and the 'urgency' (low, medium, high, critical) of the request.
+Additionally, analyze the 'sentiment' (positive, neutral, negative), the 'urgency' (low, medium, high, critical), and the 'language' (e.g., 'English', 'Spanish', 'French').
 
 Use previous conversation context only when the latest customer message is ambiguous.
 Return only the structured classification result.
@@ -95,7 +95,8 @@ def llm_classify_intent(state: SupportState) -> dict:
             "context": {
                 **state.get("context", {}),
                 "sentiment": result.sentiment,
-                "urgency": result.urgency
+                "urgency": result.urgency,
+                "language": result.language
             }
         }
 

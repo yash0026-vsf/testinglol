@@ -20,3 +20,6 @@ class IntentClassification(BaseModel):
     urgency: Literal["low", "medium", "high", "critical"] = Field(
         description="The urgency of the customer request based on tone and impact."
     )
+    language: str = Field(
+        description="The detected language of the customer's message (e.g., 'English', 'Spanish')."
+    )
