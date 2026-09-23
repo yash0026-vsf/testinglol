@@ -3,185 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Support Agent</title>
+    <title>Customer Support Agent AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9fafb;
-            color: #111827;
-            display: flex;
-            height: 100vh;
-        }
-        .sidebar {
-            width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar h2 { margin-top: 0; font-size: 1.25rem; }
-        .thread-id {
-            background-color: #f3f4f6;
-            padding: 10px;
-            border-radius: 6px;
-            font-family: monospace;
-            margin-bottom: 20px;
-            word-break: break-all;
-        }
-        .btn {
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            text-align: center;
-        }
-        .btn:hover { background-color: #1d4ed8; }
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .header {
-            padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
-            background-color: #ffffff;
-            text-align: center;
-        }
-        .chat-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .message {
+        .message-bubble {
             max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 8px;
-            line-height: 1.5;
+            word-wrap: break-word;
         }
-        .message.user {
-            align-self: flex-end;
-            background-color: #2563eb;
-            color: white;
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
         }
-        .message.assistant {
-            align-self: flex-start;
-            background-color: #f3f4f6;
-            color: #111827;
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .input-container {
-            padding: 20px;
-            background-color: #ffffff;
-            border-top: 1px solid #e5e7eb;
-        }
-        .input-form { display: flex; gap: 10px; }
-        input[type="text"] {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            outline: none;
-        }
-        input[type="text"]:focus { border-color: #2563eb; }
-        
-        .human-review {
-            background-color: #fef08a;
-            border: 1px solid #facc15;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        .human-review h3 { margin-top: 0; color: #854d0e; }
-        .details { margin-bottom: 15px; font-size: 0.9rem; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-800">
 
-    <div class="sidebar">
-        <h2>Conversation</h2>
-        <div class="thread-id" id="threadIdDisplay"></div>
-        <button class="btn" onclick="startNewConversation()">Start New Conversation</button>
+    <!-- Sidebar -->
+    <div class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shadow-sm z-10">
+        <div>
+            <div class="p-6 border-b border-gray-100">
+                <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Support AI
+                </h1>
+            </div>
+            
+            <nav class="p-4 space-y-2">
+                <button onclick="switchTab('chat')" id="tab-chat" class="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    Live Chat
+                </button>
+                <button onclick="switchTab('analytics')" id="tab-analytics" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Analytics Engine
+                </button>
+            </nav>
+        </div>
+        
+        <div class="p-4 border-t border-gray-200 bg-gray-50">
+            <p class="text-xs text-gray-500 mb-2 uppercase font-semibold tracking-wider">Current Session</p>
+            <div class="bg-gray-200 text-gray-700 px-3 py-2 rounded text-sm font-mono truncate mb-3" id="threadIdDisplay"></div>
+            <button onclick="startNewConversation()" class="w-full py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium shadow-sm">
+                Restart Session
+            </button>
+        </div>
     </div>
 
-    <div class="main-content">
-        <div class="header">
-            <h1 style="margin:0;">🎧 Customer Support Agent</h1>
-            <p style="margin:5px 0 0; color:#6b7280; font-size: 0.9rem;">LangGraph-powered customer support with hybrid routing.</p>
-        </div>
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col relative">
+        
+        <!-- Chat View -->
+        <div id="view-chat" class="flex-1 flex flex-col h-full w-full max-w-4xl mx-auto">
+            <div class="p-6 border-b border-gray-200 bg-white shadow-sm z-10 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-800">Customer Support Portal</h2>
+                    <p class="text-sm text-gray-500">Powered by LangGraph Agentic AI</p>
+                </div>
+                <span class="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Agent Online
+                </span>
+            </div>
 
-        <div class="chat-container" id="chatContainer">
-            <!-- Messages go here -->
-        </div>
+            <!-- Chat Messages -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50" id="chatContainer">
+                <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">AI</div>
+                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble text-gray-700">
+                        Hello! I am the Autonomous Support Agent. I can help with billing, technical issues, account access, or handle formal complaints. How can I assist you today?
+                    </div>
+                </div>
+            </div>
 
-        <div class="input-container" id="inputContainer">
-            <form class="input-form" onsubmit="sendMessage(event)">
-                <input type="text" id="messageInput" placeholder="Describe your support issue..." required autocomplete="off">
-                <button type="submit" class="btn" id="sendBtn">Send</button>
-            </form>
-        </div>
+            <!-- Chat Input Area -->
+            <div class="p-6 bg-white border-t border-gray-200" id="inputContainer">
+                <form class="flex gap-3" onsubmit="sendMessage(event)">
+                    <input type="text" id="messageInput" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-gray-700" placeholder="Type your issue here..." required autocomplete="off">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+                        <span>Send</span>
+                        <svg class="w-4 h-4 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+                </form>
+            </div>
 
-        <div class="input-container" id="humanReviewContainer" style="display: none; background-color: #fef08a;">
-            <div class="human-review">
-                <h3>⚠️ Human Support Review Required</h3>
-                <div class="details" id="escalationDetails"></div>
-                <form class="input-form" onsubmit="resumeWorkflow(event)">
-                    <input type="text" id="humanResponseInput" placeholder="Enter human support response..." required autocomplete="off">
-                    <button type="submit" class="btn" style="background-color: #ca8a04;">Resume Workflow</button>
+            <!-- Human Review / Escalation Area -->
+            <div class="p-6 bg-yellow-50 border-t-4 border-yellow-400 hidden" id="humanReviewContainer">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-yellow-800">Human Support Escalation</h3>
+                        <p class="text-sm text-yellow-700 mt-1">The AI has requested human intervention. Review the context and reply as staff.</p>
+                        
+                        <div class="mt-4 bg-white border border-yellow-200 rounded-lg p-4 text-sm text-gray-700" id="escalationDetails">
+                            <!-- Details injected here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <form class="flex gap-3 mt-4" onsubmit="resumeWorkflow(event)">
+                    <input type="text" id="humanResponseInput" class="flex-1 border border-yellow-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 shadow-sm" placeholder="Enter staff response to user..." required autocomplete="off">
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-sm">
+                        Resolve & Resume
+                    </button>
                 </form>
             </div>
         </div>
+
+        <!-- Analytics View -->
+        <div id="view-analytics" class="hidden flex-1 flex flex-col h-full w-full bg-gray-50 overflow-y-auto">
+            <div class="p-8 max-w-5xl mx-auto w-full">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Customer Experience Engine</h2>
+                        <p class="text-gray-500 mt-1">AI-driven analysis of recent support threads and sentiment.</p>
+                    </div>
+                    <button onclick="fetchAnalytics()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Run Analysis
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="analytics-loader" class="hidden flex flex-col items-center justify-center py-20">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                    <p class="text-gray-500 font-medium">AI is reading database threads and generating report...</p>
+                </div>
+
+                <!-- Results Grid -->
+                <div id="analytics-results" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                    
+                    <!-- Recurring Issues -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 md:col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Top Recurring Issues
+                        </h3>
+                        <ul id="analytics-issues" class="space-y-3"></ul>
+                    </div>
+
+                    <!-- Emerging Complaints -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Emerging Complaints
+                        </h3>
+                        <ul id="analytics-complaints" class="space-y-3"></ul>
+                    </div>
+
+                    <!-- Churn Signals -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+                            Churn Signals
+                        </h3>
+                        <ul id="analytics-churn" class="space-y-3"></ul>
+                    </div>
+                </div>
+                
+                <!-- Initial State -->
+                <div id="analytics-initial" class="text-center py-20">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <p class="text-gray-500">Run the analysis engine to scan the database and generate a report.</p>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <script>
-        let threadId = localStorage.getItem('thread_id');
-        if (!threadId) {
-            startNewConversation();
-        } else {
-            document.getElementById('threadIdDisplay').innerText = threadId;
+        // --- Navigation ---
+        function switchTab(tab) {
+            document.getElementById('view-chat').classList.toggle('hidden', tab !== 'chat');
+            document.getElementById('view-analytics').classList.toggle('hidden', tab !== 'analytics');
+            
+            document.getElementById('tab-chat').className = tab === 'chat' 
+                ? 'w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors'
+                : 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors';
+                
+            document.getElementById('tab-analytics').className = tab === 'analytics' 
+                ? 'w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium transition-colors'
+                : 'w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors';
         }
+
+        // --- Chat Logic ---
+        let threadId = localStorage.getItem('thread_id');
+        if (!threadId) startNewConversation();
+        else document.getElementById('threadIdDisplay').innerText = threadId;
 
         function startNewConversation() {
             threadId = "customer-" + Math.random().toString(36).substring(2, 10);
             localStorage.setItem('thread_id', threadId);
             document.getElementById('threadIdDisplay').innerText = threadId;
-            document.getElementById('chatContainer').innerHTML = '';
+            const chat = document.getElementById('chatContainer');
+            chat.innerHTML = `
+                <div class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">AI</div>
+                    <div class="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble text-gray-700">
+                        New session started. How can I assist you today?
+                    </div>
+                </div>
+            `;
             showStandardInput();
         }
 
         function appendMessage(role, content) {
             const chat = document.getElementById('chatContainer');
             const msg = document.createElement('div');
-            msg.className = 'message ' + role;
-            msg.innerText = content;
+            msg.className = 'flex items-start gap-4 ' + (role === 'user' ? 'flex-row-reverse' : '');
+            
+            const avatar = role === 'user' 
+                ? `<div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold shrink-0">U</div>`
+                : `<div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">AI</div>`;
+            
+            const bubbleStyle = role === 'user'
+                ? 'bg-blue-600 text-white p-4 rounded-2xl rounded-tr-none shadow-sm message-bubble'
+                : 'bg-white border border-gray-200 text-gray-700 p-4 rounded-2xl rounded-tl-none shadow-sm message-bubble';
+                
+            msg.innerHTML = `
+                ${avatar}
+                <div class="${bubbleStyle}">${content}</div>
+            `;
+            
             chat.appendChild(msg);
             chat.scrollTop = chat.scrollHeight;
         }
 
         function showHumanReview(interruptData) {
-            document.getElementById('inputContainer').style.display = 'none';
-            document.getElementById('humanReviewContainer').style.display = 'block';
+            document.getElementById('inputContainer').classList.add('hidden');
+            document.getElementById('humanReviewContainer').classList.remove('hidden');
             
             document.getElementById('escalationDetails').innerHTML = `
-                <b>Customer Message:</b> ${interruptData.customer_message || 'Unknown'}<br>
-                <b>Intent:</b> ${interruptData.intent || 'Unknown'}<br>
-                <b>Escalation Reason:</b> ${interruptData.escalation_reason || 'Unknown'}
+                <p><span class="font-semibold text-gray-900">Customer Message:</span> ${interruptData.customer_message || 'Unknown'}</p>
+                <p class="mt-2"><span class="font-semibold text-gray-900">Detected Intent:</span> <span class="bg-gray-100 px-2 py-1 rounded border">${interruptData.intent || 'Unknown'}</span></p>
+                <p class="mt-2"><span class="font-semibold text-gray-900">Escalation Reason:</span> ${interruptData.escalation_reason || 'Unknown'}</p>
             `;
         }
 
         function showStandardInput() {
-            document.getElementById('inputContainer').style.display = 'block';
-            document.getElementById('humanReviewContainer').style.display = 'none';
+            document.getElementById('inputContainer').classList.remove('hidden');
+            document.getElementById('humanReviewContainer').classList.add('hidden');
             document.getElementById('messageInput').value = '';
             document.getElementById('humanResponseInput').value = '';
         }
@@ -213,7 +281,7 @@
                     alert(data.detail || "Error occurred");
                 }
             } catch(err) {
-                alert("API request failed");
+                alert("API request failed. Is the server running?");
             }
         }
 
@@ -223,7 +291,7 @@
             const text = input.value.trim();
             if(!text) return;
             
-            appendMessage('user', "Support Staff: " + text);
+            appendMessage('assistant', "Staff Action: " + text);
             
             try {
                 const res = await fetch('/support/resume', {
@@ -241,6 +309,37 @@
                 }
             } catch(err) {
                 alert("API request failed");
+            }
+        }
+
+        // --- Analytics Logic ---
+        async function fetchAnalytics() {
+            document.getElementById('analytics-initial').classList.add('hidden');
+            document.getElementById('analytics-results').classList.add('hidden');
+            document.getElementById('analytics-loader').classList.remove('hidden');
+            
+            try {
+                const res = await fetch('/analytics');
+                const data = await res.json();
+                
+                // Populate UI
+                const fillList = (id, items) => {
+                    const ul = document.getElementById(id);
+                    ul.innerHTML = '';
+                    if(!items || items.length === 0) ul.innerHTML = '<li class="text-gray-500 italic text-sm">No data found.</li>';
+                    else items.forEach(i => ul.innerHTML += `<li class="flex items-start gap-2 text-sm text-gray-700"><span class="text-blue-500 mt-1">•</span> ${i}</li>`);
+                };
+                
+                fillList('analytics-issues', data.recurring_issues);
+                fillList('analytics-complaints', data.emerging_complaints);
+                fillList('analytics-churn', data.churn_signals);
+                
+                document.getElementById('analytics-loader').classList.add('hidden');
+                document.getElementById('analytics-results').classList.remove('hidden');
+            } catch(e) {
+                alert("Failed to fetch analytics.");
+                document.getElementById('analytics-loader').classList.add('hidden');
+                document.getElementById('analytics-initial').classList.remove('hidden');
             }
         }
     </script>
