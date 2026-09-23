@@ -1,6 +1,12 @@
+import sys
+import os
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from langgraph.types import Command
 
 from api.schemas import (
@@ -70,6 +76,16 @@ def build_response(
         status="completed",
         response=result.get("response"),
     )
+
+
+@app.get("/")
+def read_root():
+    frontend_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+        "frontend", 
+        "index.html"
+    )
+    return FileResponse(frontend_path)
 
 
 @app.get("/health")

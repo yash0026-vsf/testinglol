@@ -7,6 +7,4 @@ pydantic
 pytest
 fastapi
 uvicorn
-streamlit
-requests
 psycopg[binary,pool]

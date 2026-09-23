@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Agent</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9fafb;
+            color: #111827;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar h2 { margin-top: 0; font-size: 1.25rem; }
+        .thread-id {
+            background-color: #f3f4f6;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-align: center;
+        }
+        .btn:hover { background-color: #1d4ed8; }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: #ffffff;
+            text-align: center;
+        }
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+        .message.user {
+            align-self: flex-end;
+            background-color: #2563eb;
+            color: white;
+        }
+        .message.assistant {
+            align-self: flex-start;
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+        .input-container {
+            padding: 20px;
+            background-color: #ffffff;
+            border-top: 1px solid #e5e7eb;
+        }
+        .input-form { display: flex; gap: 10px; }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+        input[type="text"]:focus { border-color: #2563eb; }
+        
+        .human-review {
+            background-color: #fef08a;
+            border: 1px solid #facc15;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .human-review h3 { margin-top: 0; color: #854d0e; }
+        .details { margin-bottom: 15px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Conversation</h2>
+        <div class="thread-id" id="threadIdDisplay"></div>
+        <button class="btn" onclick="startNewConversation()">Start New Conversation</button>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 style="margin:0;">🎧 Customer Support Agent</h1>
+            <p style="margin:5px 0 0; color:#6b7280; font-size: 0.9rem;">LangGraph-powered customer support with hybrid routing.</p>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+            <!-- Messages go here -->
+        </div>
+
+        <div class="input-container" id="inputContainer">
+            <form class="input-form" onsubmit="sendMessage(event)">
+                <input type="text" id="messageInput" placeholder="Describe your support issue..." required autocomplete="off">
+                <button type="submit" class="btn" id="sendBtn">Send</button>
+            </form>
+        </div>
+
+        <div class="input-container" id="humanReviewContainer" style="display: none; background-color: #fef08a;">
+            <div class="human-review">
+                <h3>⚠️ Human Support Review Required</h3>
+                <div class="details" id="escalationDetails"></div>
+                <form class="input-form" onsubmit="resumeWorkflow(event)">
+                    <input type="text" id="humanResponseInput" placeholder="Enter human support response..." required autocomplete="off">
+                    <button type="submit" class="btn" style="background-color: #ca8a04;">Resume Workflow</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let threadId = localStorage.getItem('thread_id');
+        if (!threadId) {
+            startNewConversation();
+        } else {
+            document.getElementById('threadIdDisplay').innerText = threadId;
+        }
+
+        function startNewConversation() {
+            threadId = "customer-" + Math.random().toString(36).substring(2, 10);
+            localStorage.setItem('thread_id', threadId);
+            document.getElementById('threadIdDisplay').innerText = threadId;
+            document.getElementById('chatContainer').innerHTML = '';
+            showStandardInput();
+        }
+
+        function appendMessage(role, content) {
+            const chat = document.getElementById('chatContainer');
+            const msg = document.createElement('div');
+            msg.className = 'message ' + role;
+            msg.innerText = content;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showHumanReview(interruptData) {
+            document.getElementById('inputContainer').style.display = 'none';
+            document.getElementById('humanReviewContainer').style.display = 'block';
+            
+            document.getElementById('escalationDetails').innerHTML = `
+                <b>Customer Message:</b> ${interruptData.customer_message || 'Unknown'}<br>
+                <b>Intent:</b> ${interruptData.intent || 'Unknown'}<br>
+                <b>Escalation Reason:</b> ${interruptData.escalation_reason || 'Unknown'}
+            `;
+        }
+
+        function showStandardInput() {
+            document.getElementById('inputContainer').style.display = 'block';
+            document.getElementById('humanReviewContainer').style.display = 'none';
+            document.getElementById('messageInput').value = '';
+            document.getElementById('humanResponseInput').value = '';
+        }
+
+        async function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            appendMessage('user', text);
+            input.value = '';
+            
+            try {
+                const res = await fetch('/support', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ thread_id: threadId, message: text })
+                });
+                const data = await res.json();
+                
+                if(data.status === 'completed') {
+                    appendMessage('assistant', data.response);
+                } else if (data.status === 'human_review_required') {
+                    showHumanReview(data.interrupt_data);
+                } else if (res.status === 409) {
+                    alert("Awaiting human review. Please resolve it first.");
+                } else {
+                    alert(data.detail || "Error occurred");
+                }
+            } catch(err) {
+                alert("API request failed");
+            }
+        }
+
+        async function resumeWorkflow(e) {
+            e.preventDefault();
+            const input = document.getElementById('humanResponseInput');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            appendMessage('user', "Support Staff: " + text);
+            
+            try {
+                const res = await fetch('/support/resume', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ thread_id: threadId, human_response: text })
+                });
+                const data = await res.json();
+                
+                if(data.status === 'completed') {
+                    appendMessage('assistant', data.response);
+                    showStandardInput();
+                } else {
+                    alert(data.detail || "Error occurred");
+                }
+            } catch(err) {
+                alert("API request failed");
+            }
+        }
+    </script>
+</body>
+</html>
